@@ -89,7 +89,6 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 from openai import OpenAI
 
 # client = OpenAI(
-#   api_key="sk-proj--sxQUqgoR9n8zSECElCJXxVDXrC_XCXQA"
 # )
 
 

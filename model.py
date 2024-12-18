@@ -89,7 +89,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 from openai import OpenAI
 
 # client = OpenAI(
-#   api_key="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"
+#   api_key="sk-proj--sxQUqgoR9n8zSECElCJXxVDXrC_XCXQA"
 # )
 
 
@@ -140,3 +140,14 @@ print(confusion_matrix(y_test, y_pred_lr))
 print("Accuracy for Random Forest:", accuracy_score(y_test, y_pred_rf))
 print("Confusion Matrix for Random Forest:")
 print(confusion_matrix(y_test, y_pred_rf))
+
+
+
+from transformers import pipeline
+
+classifier = pipeline(task="text-classification", model="SamLowe/roberta-base-go_emotions", top_k=None)
+
+sentences = ["I am not having a great day"]
+
+model_outputs = classifier(sentences)
+print(model_outputs[0])

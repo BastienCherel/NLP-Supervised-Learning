@@ -3,9 +3,9 @@ def run():
     st.title("Sentiment Analysis and Rating Prediction")
 
     model_options = {
-        "DistilBERT (default)": "distilbert-base-uncased",
+        "Huggingface + Random Forest": "huggingface_randomforest_model",
         "BERT": "bert-base-uncased",
-        "RoBERTa": "roberta-base",
+        "GPT 4o-mini": "gpt_4o_mini",
         "GPT-2": "gpt2",  # GPT models can also be used for different purposes
     }
     selected_model_name = st.selectbox("Select a model for sentiment analysis", model_options.keys())

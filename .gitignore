@@ -1,4 +1,5 @@
 .venv/
 models/
+*.pkl
+streamlit_app/__pycache__
 .gitignore
-streamlit_app/__pycache__/

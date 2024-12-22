@@ -24,11 +24,37 @@ def run():
             # Get the sentiment prediction
             # sentiment_result = sentiment_model(user_input)[0]  # Get first result
             # sentiment_label = sentiment_result['label']
-            
+            import pickle
+
+            # Load the container and access models
+            with open('models/huggingface_randomforest_model.pkl', 'rb') as f:
+                container = pickle.load(f)
+
+            model1 = container["model1"]
+            model2 = container["model2"]
             # # Map the sentiment to a rating from 1 to 5 stars
             # rating = sentiment_to_rating(sentiment_label)
             import random 
-            rating = random.randint(1,5)
+            pred1 = model1.predict(user_input)
+
+            labels_to_keep = ['disappointment', 'neutral', 'anger', 'joy', 'surprise']
+            result_dict = {}
+            for item in pred1[0]:
+                    if item['label'] in labels_to_keep:
+                        result_dict[item['label']] = item['score']
+
+            values = list(result_dict.values())
+
+            # If model2 expects a 2D array, you should reshape the input to match the expected shape.
+            # Here, we assume that `model2` expects one sample with multiple features (the scores)
+            aggregated_input = [values]  # This gives a 2D array with 1 sample and multiple features
+
+            # Print the reshaped input to verify
+            print(aggregated_input)
+            # Predict with model2 (assuming it's a classifier or regressor)
+            rating = model2.predict(aggregated_input)
+
+            # rating = random.randint(1,5)
             # Display the sentiment and predicted rating
             st.write(f"Sentiment: {random.randint(0,5)}")
             st.write(f"Predicted Rating: {rating} Stars")

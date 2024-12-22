@@ -25,6 +25,8 @@ def clean_text(text):
         print("No translation")
         return "No translation"
 df["avis_en"] = df["avis_en"].apply(clean_text)
+# Removing rows without translation
+df = df[df['avis_en'] != 'No translation']
 
 from imblearn.under_sampling import RandomUnderSampler
 from collections import Counter
@@ -129,16 +131,38 @@ print(classification_report(y_test, y_pred_rf))
 from sklearn.metrics import confusion_matrix, accuracy_score
 
 # Evaluate Logistic Regression
+conf_matrix_lr = confusion_matrix(y_test, y_pred_lr)
 print("Accuracy for Logistic Regression:", accuracy_score(y_test, y_pred_lr))
 print("Confusion Matrix for Logistic Regression:")
-print(confusion_matrix(y_test, y_pred_lr))
+print(conf_matrix_lr)
 
 # Evaluate Random Forest
+conf_matrix_rf = confusion_matrix(y_test, y_pred_rf)
 print("Accuracy for Random Forest:", accuracy_score(y_test, y_pred_rf))
 print("Confusion Matrix for Random Forest:")
-print(confusion_matrix(y_test, y_pred_rf))
+print(conf_matrix_rf)
 
 
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Create a matplotlib figure with 1 row and 2 columns
+fig, axes = plt.subplots(1, 2, figsize=(12, 6))
+
+# Plot confusion matrix for Logistic Regression
+sns.heatmap(conf_matrix_lr, annot=True, fmt="d", cmap="Blues", cbar=False, ax=axes[0])
+axes[0].set_title("Logistic Regression")
+axes[0].set_xlabel("Predicted")
+axes[0].set_ylabel("Actual")
+
+# Plot confusion matrix for Random Forest
+sns.heatmap(conf_matrix_rf, annot=True, fmt="d", cmap="Blues", cbar=False, ax=axes[1])
+axes[1].set_title("Random Forest")
+axes[1].set_xlabel("Predicted")
+axes[1].set_ylabel("Actual")
+
+# Show the plot
+plt.savefig("media/modelPerformance.png")
 
 from transformers import pipeline
 
@@ -147,4 +171,6 @@ classifier = pipeline(task="text-classification", model="SamLowe/roberta-base-go
 sentences = ["I am not having a great day"]
 
 model_outputs = classifier(sentences)
+print(model_outputs)
+
 print(model_outputs[0])

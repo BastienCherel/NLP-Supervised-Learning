@@ -1,13 +1,13 @@
 import streamlit as st
 from streamlit_option_menu import option_menu
-
+import sys
 # 1. as sidebar menu
 
 st.set_page_config(
     page_title="Prediction Application",
     page_icon="⭐️",
 )
-
+st.write(f"{sys.version}")
 with st.sidebar:
     selected = option_menu(None, ["Home","Exploration", "Models","Prediction", "Motivation", "Authors", 'Download'], 
         icons=['house', "bar-chart",'cpu',"terminal", "award","person", 'download'], 

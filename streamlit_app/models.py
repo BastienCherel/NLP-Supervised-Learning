@@ -1,6 +1,6 @@
 import streamlit as st
 def run():
-    st.title("List of models trained and their performance")
+    st.title("List of models trained and comparison of their performance")
 
     st.write("""
         ### Logistic Regression

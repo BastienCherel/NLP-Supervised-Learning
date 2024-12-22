@@ -1,4 +1,5 @@
 .venv/
+.vscode/
 models/
 *.pkl
 streamlit_app/__pycache__

@@ -53,7 +53,7 @@ def balance_classes():
         print("Classes balanced successfully.")
         return df_balanced
     except Exception as e:
-        print("Could not balance classes")
+        print(f"Could not balance classes : {e}")
         return None
 
 
@@ -174,3 +174,18 @@ model_outputs = classifier(sentences)
 print(model_outputs)
 
 print(model_outputs[0])
+
+from transformers import pipeline
+classifier = pipeline("zero-shot-classification",
+                      model="facebook/bart-large-mnli")
+
+sequence_to_classify = "one day I will see the world"
+candidate_labels = ['travel', 'cooking', 'dancing']
+classifier(sequence_to_classify, candidate_labels)
+import pickle
+# Save the models using pickle
+with open("models/zeroshot_bart_model.pkl", "wb") as f:
+    pickle.dump(classifier, f)
+#{'labels': ['travel', 'dancing', 'cooking'],
+# 'scores': [0.9938651323318481, 0.0032737774308770895, 0.002861034357920289],
+# 'sequence': 'one day I will see the world'}

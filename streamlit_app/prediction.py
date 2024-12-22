@@ -4,7 +4,7 @@ def run():
 
     model_options = {
         "Huggingface + Random Forest": "huggingface_randomforest_model",
-        "BERT": "bert-base-uncased",
+        "ZeroshBART": "zeroshot_bart_model",
         "GPT 4o-mini": "gpt_4o_mini",
         "GPT-2": "gpt2",  # GPT models can also be used for different purposes
     }

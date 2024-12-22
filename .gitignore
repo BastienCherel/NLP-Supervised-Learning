@@ -2,5 +2,6 @@
 .vscode/
 models/
 *.pkl
+.DS_Store
 streamlit_app/__pycache__
 .gitignore

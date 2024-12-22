@@ -1,2 +1,4 @@
 .venv/
 models/
+.gitignore
+streamlit_app/__pycache__/

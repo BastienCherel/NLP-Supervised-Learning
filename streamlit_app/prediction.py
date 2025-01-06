@@ -1,12 +1,64 @@
+from transformers import pipeline
 import streamlit as st
+import pickle
+import numpy as np
+
+def predict(model_name, user_input):
+    classifier = pipeline("zero-shot-classification", model="MoritzLaurer/mDeBERTa-v3-base-mnli-xnli")
+
+    candidate_labels = ["Positive", "Neutral", "Negative"]
+    result = classifier(user_input, candidate_labels, multi_label=False)
+    scores = result['scores']
+    labels = result['labels']
+    predicted_label = labels[np.argmax(scores)]
+    if model_name == "huggingface_randomforest_model":
+        with open('models/huggingface_randomforest_model.pkl', 'rb') as f:
+            container = pickle.load(f)
+
+        model1 = container["classifier"]
+        model2 = container["random_forest"]
+
+        pred1 = model1.predict(user_input)
+
+        result_dict = {}
+        for item in pred1[0]:
+            result_dict[item['label']] = item['score']
+
+        values = list(result_dict.values())
+
+        aggregated_input = [values]  
+        
+        rating = model2.predict(aggregated_input)
+        return predicted_label,rating
+    elif model_name == "tfidf_logistic_regression_model":
+        container = None
+        with open('models/tfidf_logistic_regression_model.pkl', 'rb') as f:
+            container = pickle.load(f)
+        model = container["tfidf_logistic_regression_model"]
+        vectorizer = container["vectorizer"]
+
+        user_input_vectorized = vectorizer.transform([user_input]).toarray()
+        rating = model.predict(user_input_vectorized)
+        return predicted_label,rating
+    elif model_name == "zeroshot_bart_facebook":
+        classifier = pipeline("zero-shot-classification",
+                      model="facebook/bart-large-mnli")
+        sentiment_rating_map = {"Very Negative": 1.0, "Negative": 2.0, "Neutral": 3.0, "Positive": 4.0,  "Very Positive": 5.0}
+        result = classifier(user_input, candidate_labels=["Very Negative", "Negative", "Neutral", "Positive", "Very Positive"])
+        return predicted_label,sentiment_rating_map[result['labels'][0]]
+    else:
+        print('Model not found')
+        return None
+
+
+
 def run():
     st.title("Sentiment Analysis and Rating Prediction")
 
     model_options = {
-        "Huggingface + Random Forest": "huggingface_randomforest_model",
-        "ZeroshBART": "zeroshot_bart_model",
-        "GPT 4o-mini": "gpt_4o_mini",
-        "GPT-2": "gpt2",  # GPT models can also be used for different purposes
+        "Roberta base go emotions + Random Forest": "huggingface_randomforest_model",
+        "TF-IDF + Logistic Regression": "tfidf_logistic_regression_model",
+        "Zeroshot BART" :"zeroshot_bart_facebook", 
     }
     selected_model_name = st.selectbox("Select a model for sentiment analysis", model_options.keys())
 
@@ -21,44 +73,11 @@ def run():
     user_input = st.text_area("Enter your text here:")
     if st.button("Submit"):
         if user_input:
-            # Get the sentiment prediction
-            # sentiment_result = sentiment_model(user_input)[0]  # Get first result
-            # sentiment_label = sentiment_result['label']
-            import pickle
 
-            # Load the container and access models
-            with open('models/huggingface_randomforest_model.pkl', 'rb') as f:
-                container = pickle.load(f)
-
-            model1 = container["model1"]
-            model2 = container["model2"]
-            # # Map the sentiment to a rating from 1 to 5 stars
-            # rating = sentiment_to_rating(sentiment_label)
-            import random 
-            pred1 = model1.predict(user_input)
-
-            labels_to_keep = ['disappointment', 'neutral', 'anger', 'joy', 'surprise']
-            result_dict = {}
-            for item in pred1[0]:
-                    if item['label'] in labels_to_keep:
-                        result_dict[item['label']] = item['score']
-
-            values = list(result_dict.values())
-
-            # If model2 expects a 2D array, you should reshape the input to match the expected shape.
-            # Here, we assume that `model2` expects one sample with multiple features (the scores)
-            aggregated_input = [values]  # This gives a 2D array with 1 sample and multiple features
-
-            # Print the reshaped input to verify
-            print(aggregated_input)
-            # Predict with model2 (assuming it's a classifier or regressor)
-            rating = model2.predict(aggregated_input)
-
-            # rating = random.randint(1,5)
-            # Display the sentiment and predicted rating
-            st.write(f"Sentiment: {random.randint(0,5)}")
-            st.write(f"Predicted Rating: {rating} Stars")
-            # Add Bootstrap icons
+            # Load the selected model
+            model_name = model_options[selected_model_name]
+            sentiment, rating = predict(model_name, user_input)
+            st.write(f"Sentiment: {sentiment}")
             st.markdown(
                 """
                 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">

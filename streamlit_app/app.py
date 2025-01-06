@@ -17,6 +17,12 @@ with st.sidebar:
 if selected == "Home":
     st.write("# Welcome to the insurance review rating prediction application")
 
+    st.header("Main Features")
+    st.markdown("""
+    - **Data Exploration**: Visualize and understand the dataset used for training models.
+    - **Models**: Assesses model performance with various metrics.
+    - **Predictions**: Input your own text and see model predictions in real-time.
+    """)
 if selected == "Exploration":
     import data_exploration
     data_exploration.run()
